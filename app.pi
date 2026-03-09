@@ -1,0 +1,32 @@
+import streamlit as st
+import pandas as pd
+
+# Configuração da página
+st.set_page_config(page_title="Royal AI Analyzer", layout="wide")
+
+# Interface Estética
+st.title("🛡️ Royal AI: Analisador de Odds")
+st.sidebar.header("Configurações")
+
+# Seletor de Casa
+casa = st.sidebar.selectbox("Casa de Aposta", ["Bet365", "Betano", "Pinnacle", "Betfair"])
+jogo = st.sidebar.selectbox("Partida", ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Arsenal vs Liverpool"])
+odd_input = st.sidebar.number_input("Odd na Casa", min_value=1.01, value=2.00, step=0.01)
+banca = st.sidebar.number_input("Banca (R$)", value=100.0)
+
+# Lógica da IA (Cálculo de EV)
+st.header(f"Analisando: {jogo}")
+probabilidade = 55.0  # Exemplo: A IA calculou 55% de chance
+odd_justa = 100 / probabilidade
+ev = (probabilidade / 100) * odd_input - 1
+
+col1, col2 = st.columns(2)
+col1.metric("Probabilidade IA", f"{probabilidade}%")
+col2.metric("Odd Justa", f"{odd_justa:.2f}")
+
+if ev > 0.03:
+    st.success("✅ OPORTUNIDADE DE VALOR ENCONTRADA")
+    stake = (ev / (odd_input - 1)) * 0.1 * banca
+    st.info(f"Sugestão de Aposta: **R$ {stake:.2f}**")
+else:
+    st.error("❌ SEM VALOR (A casa está pagando menos que o risco)")
